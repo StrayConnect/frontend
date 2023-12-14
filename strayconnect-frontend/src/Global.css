@@ -1,0 +1,7 @@
+/* Website theme will be blue 023e8a  and white ffffff */
+
+:root {
+    --white: #ffffff,
+    --red: #e63946,
+    --blue: #023e8a,
+}
