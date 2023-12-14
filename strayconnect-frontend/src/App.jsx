@@ -1,10 +1,13 @@
 import React from 'react'
-import {Route} from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
+import UserSignInForm from './components/Forms/UserSignInForm'
 
 const App = () => {
   return (
     <>
-      <Route path='/test'/>
+    <Routes path= '/doctor' >
+      <Route path='/test' element = { <UserSignInForm /> } />
+    </Routes>
     </>
   )
 }
