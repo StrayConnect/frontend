@@ -1,12 +1,19 @@
 import React from 'react'
 import {Routes, Route} from 'react-router-dom'
 import UserSignInForm from './components/Forms/UserSignInForm'
+import LogInForm from './components/Forms/LogInForm'
+import DoctorForm from './components/Forms/DoctorForm'
+import RescuerForm from './components/Forms/RescuerForm'
 
 const App = () => {
   return (
     <>
-    <Routes path= '/doctor' >
-      <Route path='/test' element = { <UserSignInForm /> } />
+    <Routes >
+      <Route path='/signup' element = { <UserSignInForm /> } />
+      <Route path='/test' element = { <LogInForm /> } />
+      <Route path='/logIn' element = { <LogInForm /> } />
+      <Route path='/doctor/signUp' element = { <DoctorForm /> } />
+      <Route path='/rescuer/signUp' element = { <RescuerForm /> } />
     </Routes>
     </>
   )
