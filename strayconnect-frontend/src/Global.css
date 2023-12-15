@@ -1,7 +1,26 @@
 /* Website theme will be blue 023e8a  and white ffffff */
 
 :root {
-    --white: #ffffff,
-    --red: #e63946,
-    --blue: #023e8a,
+    --red: #e63946;
+    --blue: #023e8a;
+    --white: #ffffff;
+    --ghostwhite: #f1faee;
+}
+input, input:active,  input:focus{
+    outline: none;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+button{
+    background-color: var(--red);
+    color: var(--white);
+    border-radius: 5px;
+    padding: 10px;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 18px;
+    font-weight: 700;
 }
