@@ -1,0 +1,42 @@
+.dropDown{
+    display: inline-block;
+}
+
+.selectedValue{
+    padding: 2px 10px;
+    width: 150px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    border: 1px solid black;
+}
+.dropDownArrow{
+    cursor: pointer;
+}
+.selectedOption{
+    max-width: 60%;
+    overflow: hidden;
+    max-height: 20px;
+}
+
+.customDropDown{
+    width: 150px;
+    max-height: 90px;
+    overflow-y: scroll;
+}
+.dropDownOption{
+    padding: 5px 10px;
+    font-size: 15px;
+    overflow: hidden;
+    max-height: 30px;
+    text-align: center;
+    overflow-y: hidden;
+
+}   
+.dropDownOption:hover{
+    background-color: var(--blue);
+    color: var(--white);
+    cursor: pointer;
+}
