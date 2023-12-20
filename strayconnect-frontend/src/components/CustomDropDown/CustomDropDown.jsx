@@ -6,7 +6,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import PropTypes from 'prop-types';
 
 const CustomDropDown = ({ options, setFunction }) => {
-   
+
     const [showOptionList, setshowOptionList] = React.useState(false);
     const [sekectedValue, setselectedValue] = React.useState(options && options[0] || "Select")
 
