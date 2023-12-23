@@ -4,6 +4,7 @@ import "./Form.css"
 import "../../Global.css"
 import { Link } from 'react-router-dom'
 import { validFormInput, validateErrorFields } from '../../utils/utilityFunctions'
+import axiosInstance from '../Axios'
 
 
 
@@ -27,28 +28,60 @@ const UserSignInForm = () => {
 
 
     useEffect(() => {
-        if(validFormInput(fName)) setfnameError("")
-        if(validFormInput(lname)) setlnameError("")
-        if(validFormInput(city)) setcityError("")
-        if(validFormInput(phone)) setphoneError("")
-        if(validFormInput(street)) setstreetError("")
-        if(validFormInput(email)) setemailError("")
-        if(validFormInput(password)) setpasswordError("")
+        if (validFormInput(fName)) setfnameError("")
+        if (validFormInput(lname)) setlnameError("")
+        if (validFormInput(city)) setcityError("")
+        if (validFormInput(phone)) setphoneError("")
+        if (validFormInput(street)) setstreetError("")
+        if (validFormInput(email)) setemailError("")
+        if (validFormInput(password)) setpasswordError("")
     }, [fName, lname, phone, city, email, city, password, street])
-    
 
 
 
 
-    // Add API Call
+
+
+
+
     const submitForm = (e) => {
         e.preventDefault();
-        if(!validFormInput(fName, lname, email, phone, city, street, password)){
+        if (!validFormInput(fName, lname, email, phone, city, street, password)) {
             return;
         }
-        if(!validateErrorFields(fnameError, lnameError, passwordError, cityError, streetError, phoneError)){
+        if (!validateErrorFields(fnameError, lnameError, passwordError, cityError, streetError, phoneError)) {
             return;
         }
+        try {
+            const data = {
+                "email": email,
+                "fname": fName,
+                "lname": lname,
+                "city": city,
+                "street": street,
+                "password": password,
+                "phone": String(phone)
+            }
+            axiosInstance.post('/user/add', data).then((res) => {
+                if(res.status === 200){
+                    window.alert("user saved successfully")
+                    setemail("");
+                    setphone("")
+                    setpassword("")
+                    setfName("")
+                    setlname("")
+                    setcity("")
+                    setstreet("")
+                }
+
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
+        catch (err) {
+            console.log(err);
+        }
+
     }
 
 
@@ -97,7 +130,7 @@ const UserSignInForm = () => {
                         <input type="text" className="form-input" value={street} onChange={(e) => { setstreet(e.target.value) }} />
                         <span className="form-error"> {streetError} </span>
                     </div>
-                    <button className="form-button" onClick={(e) =>  submitForm(e)} >Sign Up</button>
+                    <button className="form-button" onClick={(e) => submitForm(e)} >Sign Up</button>
                     <span className="form-caption">Already have an account?
                         <Link className='form-caption-link' to={'/logIn'} > LogIn</Link>
                     </span>
