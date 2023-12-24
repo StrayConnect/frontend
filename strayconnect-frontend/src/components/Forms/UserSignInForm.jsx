@@ -5,10 +5,12 @@ import "../../Global.css"
 import { Link } from 'react-router-dom'
 import { validFormInput, validateErrorFields } from '../../utils/utilityFunctions'
 import axiosInstance from '../Axios'
-
+import LoadingButton from '../LoadingButton/LoadingButton'
+import { useNavigate } from 'react-router-dom'
 
 
 const UserSignInForm = () => {
+    const navigate = useNavigate();
     const [fName, setfName] = useState('')
     const [lname, setlname] = useState('')
     const [email, setemail] = useState('')
@@ -25,6 +27,23 @@ const UserSignInForm = () => {
     const [passwordError, setpasswordError] = useState("")
     const [isApiInProgress, setisApiInProgress] = useState(false)
 
+   
+    const showErrors = () => {
+        if(!validFormInput(fName)) setfnameError("Invalid Input")
+        if(!validFormInput(lname)) setlnameError("Invalid Input")
+        if(!validFormInput(phone)) setphoneError("Invalid Input")
+        if(!validFormInput(city)) setcityError("Invalid Input")
+        if(!validFormInput(street)) setstreetError("Invalid Input")
+        if(!validFormInput(password)) setpasswordError("Invalid Input")
+        if(!validFormInput(email) || !validateEmail(email) ) setemailError("Invalid Input")
+
+    }
+
+    const validateEmail = (value) => {
+        // Regular expression for basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value);
+      }
 
 
     useEffect(() => {
@@ -37,21 +56,20 @@ const UserSignInForm = () => {
         if (validFormInput(password)) setpasswordError("")
     }, [fName, lname, phone, city, email, city, password, street])
 
-
-
-
-
-
-
-
-    const submitForm = (e) => {
+    const submitForm = async(e) => {
         e.preventDefault();
-        if (!validFormInput(fName, lname, email, phone, city, street, password)) {
+        const isInputValid = validFormInput(fName, lname, email, phone, city, street, password)
+        
+        if(!isInputValid || !validateEmail(email)){
+            showErrors();
             return;
         }
+
         if (!validateErrorFields(fnameError, lnameError, passwordError, cityError, streetError, phoneError)) {
             return;
         }
+
+        setisApiInProgress(true);
         try {
             const data = {
                 "email": email,
@@ -64,7 +82,6 @@ const UserSignInForm = () => {
             }
             axiosInstance.post('/user/add', data).then((res) => {
                 if(res.status === 200){
-                    window.alert("user saved successfully")
                     setemail("");
                     setphone("")
                     setpassword("")
@@ -72,6 +89,7 @@ const UserSignInForm = () => {
                     setlname("")
                     setcity("")
                     setstreet("")
+                    navigate("/")
                 }
 
             }).catch((err) => {
@@ -80,6 +98,9 @@ const UserSignInForm = () => {
         }
         catch (err) {
             console.log(err);
+        }
+        finally {
+            setisApiInProgress(false)
         }
 
     }
@@ -130,7 +151,11 @@ const UserSignInForm = () => {
                         <input type="text" className="form-input" value={street} onChange={(e) => { setstreet(e.target.value) }} />
                         <span className="form-error"> {streetError} </span>
                     </div>
-                    <button className="form-button" onClick={(e) => submitForm(e)} >Sign Up</button>
+                    <button className="form-button" onClick={(e) => submitForm(e)} >
+                        {
+                            isApiInProgress ? <LoadingButton /> :  "Sign Up"
+                        }
+                    </button>
                     <span className="form-caption">Already have an account?
                         <Link className='form-caption-link' to={'/logIn'} > LogIn</Link>
                     </span>
