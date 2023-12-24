@@ -5,7 +5,9 @@ import "./Form.css"
 import "../../Global.css"
 import { validFormInput, validateErrorFields } from '../../utils/utilityFunctions'
 import { useNavigate } from 'react-router-dom'
-
+import axiosInstance from '../Axios'
+import LoadingButton from '../LoadingButton/LoadingButton'
+import CustomDropDown from "../CustomDropDown/CustomDropDown"
 
 const RescuerForm = () => {
     const navigate = useNavigate();
@@ -16,21 +18,44 @@ const RescuerForm = () => {
     const [phone, setphone] = useState("")
     const [city, setcity] = useState("")
     const [street, setstreet] = useState("")
+    const [center, setcenter] = useState("")
+    const [centerList, setcenterList] = useState([])
     const [password, setpassword] = useState("")
-    const [centerCity, setcenterCity] = useState("")
-    const [centerPhone, setcenterPhone] = useState("")
-    const [centerStreet, setcenterStreet] = useState("")
     const [fnameError, setfnameError] = useState("")
     const [lnameError, setlnameError] = useState("")
     const [emailError, setemailError] = useState("")
     const [phoneError, setphoneError] = useState("")
     const [cityError, setcityError] = useState("")
+    const [centerError, setcenterError] = useState("")
     const [streetError, setstreetError] = useState("")
     const [passwordError, setpasswordError] = useState("")
-    const [centerCityError, setcenterCityError] = useState("")
-    const [centerPhoneError, setcenterPhoneError] = useState("")
-    const [centerStreetError, setcenterStreetError] = useState("")
     const [isApiInProgress, setisApiInProgress] = useState(false)
+
+
+    const showErrors = () => {
+        if(!validFormInput(fName)) setfnameError("Invalid Input")
+        if(!validFormInput(lname)) setlnameError("Invalid Input")
+        if(!validFormInput(phone)) setphoneError("Invalid Input")
+        if(!validFormInput(city)) setcityError("Invalid Input")
+        if(!validFormInput(street)) setstreetError("Invalid Input")
+        if(!validFormInput(password)) setpasswordError("Invalid Input")
+        if(!validFormInput(email) || !validateEmail(email) ) setemailError("Invalid Input")
+    }
+    
+    const validateEmail = (value) => {
+        // Regular expression for basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value);
+      }
+
+
+      useEffect(() => {
+        axiosInstance.get('/careCenter/get').then((res) => {
+            setcenterList([res.data[0]]);
+        })
+      
+      }, [])
+      
 
     useEffect(() => {
         if (validFormInput(fName)) setfnameError("")
@@ -40,20 +65,40 @@ const RescuerForm = () => {
         if (validFormInput(street)) setstreetError("")
         if (validFormInput(email)) setemailError("")
         if (validFormInput(password)) setpasswordError("")
-        if (validFormInput(centerCity)) setcenterCityError("")
-        if (validFormInput(centerPhone)) setcenterPhoneError("")
-        if (validFormInput(centerStreet)) setcenterStreetError("")
-    }, [fName, lname, phone, city, email, city, password, street, centerCity, centerPhone, centerStreet])
+    }, [fName, lname, phone, city, email, city, password, street])
 
 
     const submitForm = (e) => {
         e.preventDefault();
-        if (!validFormInput(fName, lname, email, phone, city, street, password, centerCity, centerPhone, centerStreet)) {
+        if (isApiInProgress) return;
+        if (!validFormInput(fName, lname, email, phone, city, street, password)) {
+            showErrors();
             return;
         }
-        if (!validateErrorFields(fnameError, lnameError, passwordError, cityError, streetError, phoneError, centerCityError, centerPhoneError, centerStreetError)) {
+        if (!validateErrorFields(fnameError, lnameError, passwordError, cityError, streetError, phoneError, centerError)) {
             return;
         }
+
+        setisApiInProgress(true);
+            const data = {
+                "email": email,
+                "fname": fName,
+                "lname": lname,
+                "city": city,
+                "street": street,
+                "password": password,
+                "phone": String(phone),
+                center: center['centerId']
+            }
+        axiosInstance.post('/rescuer/add', data).then((res) => {
+            window.alert("Rescuer added successfully");
+            // Navigate to Rescuer home page
+        }).catch((err) => {
+            console.log(err);
+        }).finally(() => {
+            setisApiInProgress(false);
+        })
+
     }
 
 
@@ -104,24 +149,12 @@ const RescuerForm = () => {
                         <input type="text" className="form-input" value={street} onChange={(e) => { setstreet(e.target.value) }} />
                         <span className="form-error"> {streetError} </span>
                     </div>
-                    <div className="form-biSnippet">
-                        <div className="form-snippet">
-                            <label htmlFor="" className="form-label">Center city: </label>
-                            <input type="text" className="form-input" value={centerCity} onChange={(e) => { setcenterCity(e.target.value) }} />
-                            <span className="form-error"> {centerCityError} </span>
-                        </div>
-                        <div className="form-snippet">
-                            <label htmlFor="" className="form-label">Center Phone: </label>
-                            <input type="number" value={centerPhone} onChange={(e) => { setcenterPhone(e.target.value) }} className="form-input" />
-                            <span className="form-error"> {centerPhoneError} </span>
-                        </div>
-                    </div>
-                    <div className="form-snippet">
-                        <label htmlFor="" className="form-label">Center Street: </label>
-                        <input type="email" value={centerStreet} onChange={(e) => { setcenterStreet(e.target.value) }} className="form-input" />
-                        <span className="form-error"> {centerStreetError} </span>
-                    </div>
-                    <button className="form-button" onClick={(e) => submitForm(e)} >Sign Up</button>
+                    <CustomDropDown options= {centerList} setFunction = {setcenter} showKey = {'street'}   />
+                    <button className="form-button" onClick={(e) => submitForm(e)} >
+                        {
+                            isApiInProgress ? <LoadingButton /> : "Sign Up"
+                        }
+                    </button>
                     <span className="form-caption">Already have an account?
                         <Link className='form-caption-link' to={'/logIn'} > LogIn</Link>
                     </span>

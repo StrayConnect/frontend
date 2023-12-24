@@ -1,5 +1,6 @@
 .dropDown{
     display: inline-block;
+    position: relative;
 }
 
 .selectedValue{
@@ -25,6 +26,8 @@
     width: 150px;
     max-height: 90px;
     overflow-y: scroll;
+    position: absolute;
+    background-color: white;
 }
 .dropDownOption{
     padding: 5px 10px;
